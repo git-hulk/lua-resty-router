@@ -326,3 +326,40 @@ GET /d/c/b
 GET /d/c/b
 --- response_body_like: .*
 --- error_code: 500
+
+=== TEST 13: 404 case
+--- http_config eval: $::HttpConfig
+--- config
+    location ~ .* {
+        content_by_lua '
+            local R = require("resty.router")
+            local router = R:new()
+            router:dispatch(function()
+                ngx.status = 404
+                ngx.print("not found")
+                ngx.exit(ngx.OK)
+            end)
+        ';
+    }
+--- request
+GET /test/b
+--- response_body: not found
+--- error_code: 404
+
+=== TEST 14: any method case
+--- http_config eval: $::HttpConfig
+--- config
+    location ~ .* {
+        content_by_lua '
+            local R = require("resty.router")
+            local router = R:new()
+            router:any("/a//:b//*", function(params)
+                ngx.print("any")
+            end)
+            router:dispatch()
+        ';
+    }
+--- request
+GET /a/////b//c
+--- response_body: any
+--- error_code: 200

@@ -172,7 +172,6 @@ end
 
 function _M.find_route(self, method, path) 
     local params = {}
-    local not_handler = "not handler found"
     if not method or not path then
         return nil, params, "method or path can't be empty"
     end
@@ -185,7 +184,7 @@ function _M.find_route(self, method, path)
     end
     local node = self.routes[method]
     if not node then
-        return nil, params, not_handler 
+        return nil, params, nil
     end
 
     local parser = _P:new(path)
@@ -203,7 +202,7 @@ function _M.find_route(self, method, path)
                 if handler then
                     return handler, params, nil
                 end
-                return nil, params, not_handler
+                return nil, params, nil
             end
         end
         token, err = parser:next_token()
@@ -250,7 +249,7 @@ function _M.any(self, path, handler)
     end
 end
 
-function _M.dispatch(self)
+function _M.dispatch(self, notfound_handler)
     local method = ngx.req.get_method()
     local uri = ngx.var.uri
     local handle, params, err = self:find_route(method, uri)
@@ -258,7 +257,10 @@ function _M.dispatch(self)
         return err
     end
     if not handle then
-        return "no handler"
+        if type(notfound_handler) == "function" then
+            return notfound_handler()
+        end
+        return "not handler found"
     end
     return handle(params)
 end
