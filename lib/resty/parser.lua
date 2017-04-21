@@ -3,7 +3,7 @@
 local _M = {}
 local _mt = {__index = _M}
 
-function _M.new(path)
+function _M.new(self, path)
     local self = {}
     self.pos = 1
     self.len = string.len(path)

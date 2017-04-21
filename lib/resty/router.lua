@@ -3,7 +3,7 @@
 local _M = {_VERSION = "0.1"}
 local _mt = {__index = _M}
 
-local _P = require "parser"
+local _P = require "resty.parser"
 local _nodeType = {normal = 1, wildcard = 2, catchall = 3}
 local _methods = {'head', 'get', 'post', 'put', 'delete', 'patch', 'trace', 'connect', 'options'}
 
@@ -80,6 +80,8 @@ function _M.add_route(self, method, route, handler)
         end
     end
     
+    method = string.lower(method)
+    route = string.lower(route)
     route = trim_slash(route)
     local _, nparam = string.gsub(route, "[:*]", " ")
     if nparam == 0 then
@@ -96,7 +98,7 @@ function _M.add_route(self, method, route, handler)
         self.routes[method] = node
     end
     local child = nil
-    local parser = _P.new(route)
+    local parser = _P:new(route)
     local token, err = parser:next_token()
     while token and not err do
         if string.len(token) == 0 then
@@ -107,7 +109,7 @@ function _M.add_route(self, method, route, handler)
             self:throw("new child error")
         end
         if node.childs[":token"] then
-            return "route conflict, the wildcard param already exists" 
+            self:throw("conflicts, while the wildcard param already exists")
         end
         if child.nodeType == _nodeType.normal then
             if not node.childs[token] then
@@ -119,7 +121,7 @@ function _M.add_route(self, method, route, handler)
             end
         elseif child.nodeType == _nodeType.wildcard then
             if node.nchild > 0 then
-                return "route conflict, childs exist when add wildcard param" 
+                self:throw("conflicts, nchild > 0 when add wildcard param")
             end
             node.nchild = 1
             node.childs[":token"] = child
@@ -127,17 +129,17 @@ function _M.add_route(self, method, route, handler)
         end
         token, err = parser:next_token()
         if child.nodeType == _nodeType.catchall and token then
-            return "catchalll should be at the end of route"
+            self:throw("`*` shouldn't at the middle of route")
         end
         ::continue::
     end
-    if not err then
+    if err then
         self:throw(err)
     end
     if child.nodeType == _nodeType.catchall then
         child.handler =  handler 
         if node.childs[":token"] then
-            return "add catchall when wildcard is exists"
+            self:throw("conflicts, add `*` when wildcard param already exists")
         end
         if not node.childs["*"] then
             node.childs["*"] = {}
@@ -175,6 +177,8 @@ function _M.find_route(self, method, path)
         return nil, params, "method or path can't be empty"
     end
 
+    method = string.lower(method)
+    path = string.lower(path)
     path = trim_slash(path)
     if self.const_routes[method] and self.const_routes[method][path] then
         return self.const_routes[method][path], params, nil
@@ -184,7 +188,7 @@ function _M.find_route(self, method, path)
         return nil, params, not_handler 
     end
 
-    local parser = _P.new(path)
+    local parser = _P:new(path)
     local token, err = parser:next_token()
     while token and not err do
         if node.childs[token] and token ~= ":token" then
