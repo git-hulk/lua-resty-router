@@ -22,7 +22,7 @@ __DATA__
 --- config
     location /t {
         content_by_lua '
-            local P = require("resty.parser")
+            local P = require("resty.path_parser")
             local parser = P:new("/a/b/c/")
             local token, err = parser:next_token()
             local ret = ""
@@ -43,7 +43,7 @@ GET /t
 --- config
     location /t {
         content_by_lua '
-            local P = require("resty.parser")
+            local P = require("resty.path_parser")
             local parser = P:new("/")
             local token, err = parser:next_token()
             local ret = ""

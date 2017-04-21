@@ -3,7 +3,7 @@
 local _M = {_VERSION = "0.1"}
 local _mt = {__index = _M}
 
-local _P = require "resty.parser"
+local _P = require "resty.path_parser"
 local _nodeType = {normal = 1, wildcard = 2, catchall = 3}
 local _methods = {'head', 'get', 'post', 'put', 'delete', 'patch', 'trace', 'connect', 'options'}
 
