@@ -82,7 +82,7 @@ route
 -------
 #### Using GET, POST, HEAD, PUT, PATCH, DELETE, ANY and OPTIONS
 
-```
+```lua
 local R = require("resty.router")
 local router = R:new()
 router:get("/GetRoute", handler)
@@ -98,7 +98,7 @@ router:run()
 
 #### Parameters in path
 
-```
+```lua
     local R = require("resty.router")
     local router = R:new()
 
@@ -144,7 +144,7 @@ run
 Method run would find route, and callback the handler. when not handler was found and notfound_handler is set, callback the handler.
 
 
-```
+```lua
     local R = require("resty.router")
     local router = R:new()
     router:run() or router:run(ontfound_handler)
