@@ -287,7 +287,7 @@ GET /a/c/ccc.html
     }
 --- request
 GET /a/c/
---- response_body: 
+--- response_body: 2
 --- error_code: 200
 
 === TEST 11: route conflicts case 

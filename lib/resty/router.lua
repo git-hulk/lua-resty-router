@@ -213,6 +213,12 @@ function _M.find_route(self, method, path)
     if err then
         return nil, params, err
     end
+    if not handler then
+        handler = self:_catchall(node, path)
+        if handler then
+            return handler, params, nil
+        end
+    end
     return handler, params, nil 
 end
 
