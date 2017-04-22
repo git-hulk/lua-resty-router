@@ -102,22 +102,22 @@ router:run()
     local R = require("resty.router")
     local router = R:new()
 
-    // This handler will match /user/john but will not match neither /user/ or /user
+    -- This handler will match /user/john but will not match neither /user/ or /user
     router:get("/user/:name", function(params)
         local name = params["name"]
         ngx.print("Hello", name)
         ngx.exit(200)
     end)
 
-    // However, this one will match /user/john/ and also /user/john/send
-    // If no other routers match /user/john, it will redirect to /user/john/
+    -- However, this one will match /user/john/ and also /user/john/send
+    -- If no other routers match /user/john, it will redirect to /user/john/
     router.get("/user/:name/*", function(params)
         local name = params("name")
         ngx.print("Hello", name)
         ngx.exit(200)
     end)
     
-    // This one will match /user/jhon/send.html, also match any uri start with /user/jhon/ and end with .html
+    -- This one will match /user/jhon/send.html, also match any uri start with /user/jhon/ and end with .html
     router:get("/user/jhon/*.html", function(params)
         ngx.print("Hello")
         ngx.exit(200)
