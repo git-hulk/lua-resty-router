@@ -173,7 +173,8 @@ each request.
 Author
 ======
 
-Yichun "agentzh" Zhang (章亦春) <agentzh@gmail.com>, OpenResty Inc.
+Tianyi "git-hulk" Lin (林添毅) <hulk.website@gmail.com>.
+
 
 [Back to TOC](#table-of-contents)
 
