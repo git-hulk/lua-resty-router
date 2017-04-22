@@ -249,7 +249,7 @@ function _M.any(self, path, handler)
     end
 end
 
-function _M.dispatch(self, notfound_handler)
+function _M.run(self, notfound_handler)
     local method = ngx.req.get_method()
     local uri = ngx.var.uri
     local handle, params, err = self:find_route(method, uri)

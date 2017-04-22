@@ -17,7 +17,7 @@ run_tests();
 
 __DATA__
 
-=== TEST 1: dispatch normal case
+=== TEST 1: run normal case
 --- http_config eval: $::HttpConfig
 --- config
     location ~ .* {
@@ -39,7 +39,7 @@ __DATA__
             router:get("/d/c/*.pdf", function(params)
                 ngx.print("3")
             end)
-            router:dispatch()
+            router:run()
         ';
     }
 --- request
@@ -47,7 +47,7 @@ GET /a/b/c
 --- response_body: 1
 --- error_code: 200
 
-=== TEST 2: dispatch normal case
+=== TEST 2: run normal case
 --- http_config eval: $::HttpConfig
 --- config
     location ~ .* {
@@ -69,7 +69,7 @@ GET /a/b/c
             router:get("/d/c/*.pdf", function(params)
                 ngx.print("3")
             end)
-            router:dispatch()
+            router:run()
         ';
     }
 --- request
@@ -77,7 +77,7 @@ GET /a/bc/c
 --- response_body: bc
 --- error_code: 200
 
-=== TEST 3: dispatch normal case
+=== TEST 3: run normal case
 --- http_config eval: $::HttpConfig
 --- config
     location ~ .* {
@@ -99,7 +99,7 @@ GET /a/bc/c
             router:get("/d/c/*.pdf", function(params)
                 ngx.print("3")
             end)
-            router:dispatch()
+            router:run()
         ';
     }
 --- request
@@ -107,7 +107,7 @@ GET /c/bc/cd
 --- response_body: bccd
 --- error_code: 200
 
-=== TEST 4: dispatch normal case
+=== TEST 4: run normal case
 --- http_config eval: $::HttpConfig
 --- config
     location ~ .* {
@@ -129,7 +129,7 @@ GET /c/bc/cd
             router:get("/d/c/*.pdf", function(params)
                 ngx.print("3")
             end)
-            router:dispatch()
+            router:run()
         ';
     }
 --- request
@@ -137,7 +137,7 @@ GET /a/b/
 --- response_body:
 --- error_code: 200
 
-=== TEST 5: dispatch normal case
+=== TEST 5: run normal case
 --- http_config eval: $::HttpConfig
 --- config
     location ~ .* {
@@ -159,7 +159,7 @@ GET /a/b/
             router:get("/d/c/*.pdf", function(params)
                 ngx.print("3")
             end)
-            router:dispatch()
+            router:run()
         ';
     }
 --- request
@@ -167,7 +167,7 @@ GET /d/c/b.html
 --- response_body: 2 
 --- error_code: 200
 
-=== TEST 6: dispatch normal case
+=== TEST 6: run normal case
 --- http_config eval: $::HttpConfig
 --- config
     location ~ .* {
@@ -189,7 +189,7 @@ GET /d/c/b.html
             router:get("/d/c/*.pdf", function(params)
                 ngx.print("3")
             end)
-            router:dispatch()
+            router:run()
         ';
     }
 --- request
@@ -197,7 +197,7 @@ GET /d/c/bmm.pdf
 --- response_body: 3 
 --- error_code: 200
 
-=== TEST 7: dispatch normal case
+=== TEST 7: run normal case
 --- http_config eval: $::HttpConfig
 --- config
     location ~ .* {
@@ -219,7 +219,7 @@ GET /d/c/bmm.pdf
             router:get("/d/c/*.pdf", function(params)
                 ngx.print("3")
             end)
-            router:dispatch()
+            router:run()
         ';
     }
 --- request
@@ -227,7 +227,7 @@ GET /d/c/b
 --- response_body:
 --- error_code: 200
 
-=== TEST 8: dispatch normal case 
+=== TEST 8: run normal case 
 --- http_config eval: $::HttpConfig
 --- config
     location ~ .* {
@@ -240,7 +240,7 @@ GET /d/c/b
             router:get("/a/c/*", function(params)
                 ngx.print("2")
             end)
-            router:dispatch()
+            router:run()
         ';
     }
 --- request
@@ -248,7 +248,7 @@ GET /a/c/b
 --- response_body: 2 
 --- error_code: 200
 
-=== TEST 9: dispatch normal case 
+=== TEST 9: run normal case 
 --- http_config eval: $::HttpConfig
 --- config
     location ~ .* {
@@ -261,7 +261,7 @@ GET /a/c/b
             router:get("/a/c/*", function(params)
                 ngx.print("2")
             end)
-            router:dispatch()
+            router:run()
         ';
     }
 --- request
@@ -269,7 +269,7 @@ GET /a/c/ccc.html
 --- response_body: 1 
 --- error_code: 200
 
-=== TEST 10: dispatch normal case 
+=== TEST 10: run normal case 
 --- http_config eval: $::HttpConfig
 --- config
     location ~ .* {
@@ -282,7 +282,7 @@ GET /a/c/ccc.html
             router:get("/a/c/*", function(params)
                 ngx.print("2")
             end)
-            router:dispatch()
+            router:run()
         ';
     }
 --- request
@@ -334,7 +334,7 @@ GET /d/c/b
         content_by_lua '
             local R = require("resty.router")
             local router = R:new()
-            router:dispatch(function()
+            router:run(function()
                 ngx.status = 404
                 ngx.print("not found")
                 ngx.exit(ngx.OK)
@@ -356,7 +356,7 @@ GET /test/b
             router:any("/a//:b//*", function(params)
                 ngx.print("any")
             end)
-            router:dispatch()
+            router:run()
         ';
     }
 --- request
