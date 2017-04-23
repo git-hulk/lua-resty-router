@@ -147,7 +147,7 @@ Method run would find route, and callback the handler. when not handler was foun
 ```lua
     local R = require("resty.router")
     local router = R:new()
-    router:run() or router:run(ontfound_handler)
+    router:run() -- or router:run(notfound_handler)
 ``` 
 
 [Back to TOC](#table-of-contents)
