@@ -80,14 +80,20 @@ function _M.add_route(self, method, route, handler)
         end
     end
     
+    if not self.const_routes[method] then
+        self.const_routes[method] = {}
+    end
+
     method = string.lower(method)
     route = string.lower(route)
     route = trim_slash(route)
+
+    if route == "*" or route == "/*" then -- catch all url
+        self.const_routes[method]["*"] = handler
+        return
+    end
     local _, nparam = string.gsub(route, "[:*]", " ")
     if nparam == 0 then
-        if not self.const_routes[method] then
-            self.const_routes[method] = {}
-        end
         self.const_routes[method][route] = handler
         return
     end
@@ -184,6 +190,9 @@ function _M.find_route(self, method, path)
     end
     local node = self.routes[method]
     if not node then
+        if self.const_routes[method] and self.const_routes[method]["*"] then
+            return self.const_routes[method]["*"]
+        end
         return nil, params, nil
     end
 
@@ -202,8 +211,8 @@ function _M.find_route(self, method, path)
                 if handler then
                     return handler, params, nil
                 end
-                return nil, params, nil
             end
+            goto not_found
         end
         token, err = parser:next_token()
         if token == nil and err == nil then -- last token in path
@@ -213,13 +222,17 @@ function _M.find_route(self, method, path)
     if err then
         return nil, params, err
     end
-    if not handler then
-        handler = self:_catchall(node, path)
-        if handler then
-            return handler, params, nil
-        end
+    if handler then
+        return handler, params, nil
     end
-    return handler, params, nil 
+    handler = self:_catchall(node, path)
+    if handler then
+        return handler, params, nil
+    end
+
+    ::not_found::
+    handler = self.const_routes[method]["*"]
+    return handler, params, nil
 end
 
 function _M._dump_routes(self, root)

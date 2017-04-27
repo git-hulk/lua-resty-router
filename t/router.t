@@ -363,3 +363,45 @@ GET /test/b
 GET /a/////b//c
 --- response_body: any
 --- error_code: 200
+
+=== TEST 15: catchall case
+--- http_config eval: $::HttpConfig
+--- config
+    location ~ .* {
+        content_by_lua '
+            local R = require("resty.router")
+            local router = R:new()
+            router:any("/a/b/c/:d", function(params)
+                ngx.print("token")
+            end)
+            router:any("/*", function(params)
+                ngx.print("all")
+            end)
+            router:run()
+        ';
+    }
+--- request
+GET /a/b/c/d/e
+--- response_body: all
+--- error_code: 200
+
+=== TEST 16: catchall case
+--- http_config eval: $::HttpConfig
+--- config
+    location ~ .* {
+        content_by_lua '
+            local R = require("resty.router")
+            local router = R:new()
+            router:any("/a/b/c/:d", function(params)
+                ngx.print("token")
+            end)
+            router:any("/*", function(params)
+                ngx.print("all")
+            end)
+            router:run()
+        ';
+    }
+--- request
+GET /a/b/c/ccc
+--- response_body: token
+--- error_code: 200

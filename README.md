@@ -102,6 +102,12 @@ router:run()
     local R = require("resty.router")
     local router = R:new()
 
+    // catch all when on route is match
+    router:get("/*", function(params) -- /* or * is ok
+        ngx.say("catch all") 
+        ngx.exit(200)
+    end)
+
     // This handler will match /user/john but will not match neither /user/ or /user
     router:get("/user/:name", function(params)
         local name = params["name"]
