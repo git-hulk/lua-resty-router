@@ -82,7 +82,7 @@ route
 -------
 #### Using GET, POST, HEAD, PUT, PATCH, DELETE, ANY and OPTIONS
 
-```
+```lua
 local R = require("resty.router")
 local router = R:new()
 router:get("/GetRoute", handler)
@@ -98,32 +98,32 @@ router:run()
 
 #### Parameters in path
 
-```
+```lua
     local R = require("resty.router")
     local router = R:new()
 
-    // catch all when on route is match
+    -- catch all when on route is match
     router:get("/*", function(params) -- /* or * is ok
         ngx.say("catch all") 
         ngx.exit(200)
     end)
 
-    // This handler will match /user/john but will not match neither /user/ or /user
+    -- This handler will match /user/john but will not match neither /user/ or /user
     router:get("/user/:name", function(params)
         local name = params["name"]
         ngx.print("Hello", name)
         ngx.exit(200)
     end)
 
-    // However, this one will match /user/john/ and also /user/john/send
-    // If no other routers match /user/john, it will redirect to /user/john/
+    -- However, this one will match /user/john/ and also /user/john/send
+    -- If no other routers match /user/john, it will redirect to /user/john/
     router.get("/user/:name/*", function(params)
         local name = params("name")
         ngx.print("Hello", name)
         ngx.exit(200)
     end)
     
-    // This one will match /user/jhon/send.html, also match any uri start with /user/jhon/ and end with .html
+    -- This one will match /user/jhon/send.html, also match any uri start with /user/jhon/ and end with .html
     router:get("/user/jhon/*.html", function(params)
         ngx.print("Hello")
         ngx.exit(200)
@@ -150,10 +150,10 @@ run
 Method run would find route, and callback the handler. when not handler was found and notfound_handler is set, callback the handler.
 
 
-```
+```lua
     local R = require("resty.router")
     local router = R:new()
-    router:run() or router:run(ontfound_handler)
+    router:run() -- or router:run(notfound_handler)
 ``` 
 
 [Back to TOC](#table-of-contents)
@@ -179,7 +179,8 @@ each request.
 Author
 ======
 
-Yichun "agentzh" Zhang (章亦春) <agentzh@gmail.com>, OpenResty Inc.
+Tianyi "git-hulk" Lin (林添毅) <hulk.website@gmail.com>.
+
 
 [Back to TOC](#table-of-contents)
 
@@ -201,6 +202,3 @@ Redistribution and use in source and binary forms, with or without modification,
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 [Back to TOC](#table-of-contents)
-
-
-#lua-resty-router
