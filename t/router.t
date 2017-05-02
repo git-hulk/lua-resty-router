@@ -307,10 +307,30 @@ GET /a/c/
     }
 --- request
 GET /d/c/b
---- response_body_like: .*
+--- response_body_like: conflicts, while the wildcard param already exists 
 --- error_code: 500
 
-=== TEST 12: route conflicts case
+=== TEST 12: route conflicts case 
+--- http_config eval: $::HttpConfig
+--- config
+    location ~ .* {
+        content_by_lua '
+            local R = require("resty.router")
+            local router = R:new()
+            router:get("/a/c/:c/", function(params)
+                ngx.print(2)
+            end)
+            router:get("/a/:d/c/", function(params)
+                ngx.print("1")
+            end)
+        ';
+    }
+--- request
+GET /d/c/b
+--- response_body_like: conflicts, nchild > 0 when add wildcard param 
+--- error_code: 500
+
+=== TEST 13: route conflicts case
 --- http_config eval: $::HttpConfig
 --- config
     location ~ .* {
@@ -324,45 +344,28 @@ GET /d/c/b
     }
 --- request
 GET /d/c/b
---- response_body_like: .*
+--- response_body_like: `*` shouldn't at the middle of route 
 --- error_code: 500
 
-=== TEST 13: 404 case
+=== TEST 14: route conflicts case 
 --- http_config eval: $::HttpConfig
 --- config
     location ~ .* {
         content_by_lua '
             local R = require("resty.router")
             local router = R:new()
-            router:run(function()
-                ngx.status = 404
-                ngx.print("not found")
-                ngx.exit(ngx.OK)
+            router:get("/a/:d/c/", function(params)
+                ngx.print("1")
+            end)
+            router:get("/a/c/:c/", function(params)
+                ngx.print(2)
             end)
         ';
     }
 --- request
-GET /test/b
---- response_body: not found
---- error_code: 404
-
-=== TEST 14: any method case
---- http_config eval: $::HttpConfig
---- config
-    location ~ .* {
-        content_by_lua '
-            local R = require("resty.router")
-            local router = R:new()
-            router:any("/a//:b//*", function(params)
-                ngx.print("any")
-            end)
-            router:run()
-        ';
-    }
---- request
-GET /a/////b//c
---- response_body: any
---- error_code: 200
+GET /d/c/b
+--- response_body_like: conflicts, while the wildcard param already exists
+--- error_code: 500
 
 === TEST 15: catchall case
 --- http_config eval: $::HttpConfig
@@ -405,3 +408,83 @@ GET /a/b/c/d/e
 GET /a/b/c/ccc
 --- response_body: token
 --- error_code: 200
+
+=== TEST 17: multi token case 
+--- http_config eval: $::HttpConfig
+--- config
+    location ~ .* {
+        content_by_lua '
+            local R = require("resty.router")
+            local router = R:new()
+            router:any("/a/:b/", function(params)
+                ngx.print("1")
+            end)
+            router:any("/a/:b/:c", function(params)
+                ngx.print("2")
+            end)
+            router:run()
+        ';
+    }
+--- request
+GET /a/b
+--- response_body: 1
+--- error_code: 200
+
+=== TEST 18: multi token case 
+--- http_config eval: $::HttpConfig
+--- config
+    location ~ .* {
+        content_by_lua '
+            local R = require("resty.router")
+            local router = R:new()
+            router:any("/a/:b/", function(params)
+                ngx.print("1")
+            end)
+            router:any("/a/:b/:c", function(params)
+                ngx.print("2")
+            end)
+            router:run()
+        ';
+    }
+--- request
+GET /a/b/c
+--- response_body: 2
+--- error_code: 200
+
+=== TEST 19: 404 case
+--- http_config eval: $::HttpConfig
+--- config
+    location ~ .* {
+        content_by_lua '
+            local R = require("resty.router")
+            local router = R:new()
+            router:run(function()
+                ngx.status = 404
+                ngx.print("not found")
+                ngx.exit(ngx.OK)
+            end)
+        ';
+    }
+--- request
+GET /test/b
+--- response_body: not found
+--- error_code: 404
+
+=== TEST 20: any method case
+--- http_config eval: $::HttpConfig
+--- config
+    location ~ .* {
+        content_by_lua '
+            local R = require("resty.router")
+            local router = R:new()
+            router:any("/a//:b//*", function(params)
+                ngx.print("any")
+            end)
+            router:run()
+        ';
+    }
+--- request
+GET /a/////b//c
+--- response_body: any
+--- error_code: 200
+

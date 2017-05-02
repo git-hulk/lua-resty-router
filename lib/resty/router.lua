@@ -115,7 +115,10 @@ function _M.add_route(self, method, route, handler)
             self:throw("new child error")
         end
         if node.childs[":token"] then
-            self:throw("conflicts, while the wildcard param already exists")
+            if child.nodeType ~= _nodeType.wildcard
+                or child.token ~= node.childs[":token"].token then
+                self:throw("conflicts, while the wildcard param already exists")
+            end
         end
         if child.nodeType == _nodeType.normal then
             if not node.childs[token] then
@@ -126,12 +129,17 @@ function _M.add_route(self, method, route, handler)
                 node = node.childs[token]
             end
         elseif child.nodeType == _nodeType.wildcard then
-            if node.nchild > 0 then
-                self:throw("conflicts, nchild > 0 when add wildcard param")
+            if node.nchild == 1 and node.childs[":token"] and
+                node.childs[":token"].token == child.token then
+                node = node.childs[":token"]
+            else
+                if node.nchild > 0 then
+                    self:throw("conflicts, nchild > 0 when add wildcard param")
+                end
+                node.nchild = 1
+                node.childs[":token"] = child
+                node = child
             end
-            node.nchild = 1
-            node.childs[":token"] = child
-            node = child
         end
         token, err = parser:next_token()
         if child.nodeType == _nodeType.catchall and token then
