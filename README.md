@@ -1,7 +1,7 @@
 Name
 ====
 
-lua-resty-router - Lua http router for the ngx_lua based on the cosocket API
+lua-resty-router - Lua http router for the ngx_lua
 
 Table of Contents
 =================
