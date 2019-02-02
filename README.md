@@ -48,7 +48,7 @@ Synopsis
                 local Router = require "resty.router"
               router = Router:new()
               router:get("/a/:b/:c", function(params)
-                ngx.print(params["b"].."-"..parmams["c"])
+                ngx.print(params["b"].."-"..params["c"])
               end)
               router:post("/b/c/*.html", function(params)
                 ngx.print("echo html")
