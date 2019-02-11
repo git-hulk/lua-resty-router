@@ -40,7 +40,7 @@ Synopsis
 ========
 
 ```lua
-    lua_package_path "/path/to/lua-resty-memcached/lib/?.lua;;";
+    lua_package_path "/path/to/lua-resty-router/lib/?.lua;;";
 
     server {
         location /test {
